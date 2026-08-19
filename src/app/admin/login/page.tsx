@@ -68,6 +68,7 @@ export default function AdminLoginPage() {
       router.push("/admin");
       router.refresh();
     } catch (err) {
+      console.error("admin login error:", err, "ADMIN_EMAIL=", ADMIN_EMAIL);
       setError(getAuthErrorMessage(err));
     } finally {
       setIsLoading(false);
