@@ -16,8 +16,12 @@ import {
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Lesson } from "@/types/lesson";
 import { getLessonStatus } from "@/lib/utils/status";
+import Modal from "@/components/ui/Modal";
+import StatusBadge from "@/components/ui/StatusBadge";
+import { formatLessonTime } from "@/lib/utils/date";
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
+const MAX_VISIBLE_PER_DAY = 2;
 
 const DOT_COLOR: Record<string, string> = {
   upcoming: "bg-muted",
@@ -27,6 +31,12 @@ const DOT_COLOR: Record<string, string> = {
   ended: "bg-foreground/25",
 };
 
+function weekdayColorClass(dayIndex: number, base: string): string {
+  if (dayIndex === 0) return "text-danger";
+  if (dayIndex === 6) return "text-[#2563eb]";
+  return base;
+}
+
 export default function LessonCalendar({
   lessons,
   onSelectLesson,
@@ -35,6 +45,7 @@ export default function LessonCalendar({
   onSelectLesson: (lesson: Lesson) => void;
 }) {
   const [month, setMonth] = useState(() => new Date());
+  const [selectedDay, setSelectedDay] = useState<{ date: Date; lessons: Lesson[] } | null>(null);
 
   const days = useMemo(() => {
     const start = startOfWeek(startOfMonth(month));
@@ -83,9 +94,9 @@ export default function LessonCalendar({
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-muted sm:gap-2">
-        {WEEKDAYS.map((w) => (
-          <div key={w} className="py-1">
+      <div className="grid grid-cols-7 gap-1 text-center text-xs font-semibold sm:gap-2">
+        {WEEKDAYS.map((w, i) => (
+          <div key={w} className={`py-1 ${weekdayColorClass(i, "text-muted")}`}>
             {w}
           </div>
         ))}
@@ -97,6 +108,8 @@ export default function LessonCalendar({
           const dayLessons = lessonsByDate.get(dateKey) ?? [];
           const inMonth = isSameMonth(day, month);
           const today = isToday(day);
+          const weekdayIndex = day.getDay();
+          const hiddenCount = dayLessons.length - MAX_VISIBLE_PER_DAY;
 
           return (
             <div
@@ -105,16 +118,36 @@ export default function LessonCalendar({
                 inMonth ? "border-border" : "border-transparent"
               } ${today ? "bg-primary-light/50" : ""}`}
             >
-              <span
-                className={`text-xs font-semibold ${
-                  inMonth ? (today ? "text-primary-dark" : "text-foreground/70") : "text-foreground/20"
-                }`}
-              >
-                {format(day, "d")}
-              </span>
+              {dayLessons.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => setSelectedDay({ date: day, lessons: dayLessons })}
+                  className={`w-fit rounded px-1 text-xs font-semibold hover:underline ${
+                    inMonth
+                      ? today
+                        ? "text-primary-dark"
+                        : weekdayColorClass(weekdayIndex, "text-foreground/70")
+                      : "text-foreground/20"
+                  }`}
+                >
+                  {format(day, "d")}
+                </button>
+              ) : (
+                <span
+                  className={`text-xs font-semibold ${
+                    inMonth
+                      ? today
+                        ? "text-primary-dark"
+                        : weekdayColorClass(weekdayIndex, "text-foreground/70")
+                      : "text-foreground/20"
+                  }`}
+                >
+                  {format(day, "d")}
+                </span>
+              )}
 
               <div className="flex flex-col gap-0.5">
-                {dayLessons.slice(0, 2).map((lesson) => {
+                {dayLessons.slice(0, MAX_VISIBLE_PER_DAY).map((lesson) => {
                   const status = getLessonStatus(lesson);
                   return (
                     <button
@@ -128,16 +161,57 @@ export default function LessonCalendar({
                     </button>
                   );
                 })}
-                {dayLessons.length > 2 && (
-                  <span className="px-1 text-[10px] font-semibold text-muted">
-                    +{dayLessons.length - 2}개 더
-                  </span>
+                {hiddenCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedDay({ date: day, lessons: dayLessons })}
+                    className="px-1 text-left text-[10px] font-semibold text-primary hover:underline"
+                  >
+                    +{hiddenCount}개 더
+                  </button>
                 )}
               </div>
             </div>
           );
         })}
       </div>
+
+      <Modal
+        isOpen={selectedDay !== null}
+        onClose={() => setSelectedDay(null)}
+        title={
+          selectedDay
+            ? `${format(selectedDay.date, "yyyy년 M월 d일")} (${WEEKDAYS[selectedDay.date.getDay()]})`
+            : ""
+        }
+        maxWidthClassName="max-w-md"
+      >
+        <div className="flex flex-col gap-2">
+          {selectedDay?.lessons.map((lesson) => {
+            const status = getLessonStatus(lesson);
+            return (
+              <button
+                key={lesson.id}
+                type="button"
+                onClick={() => {
+                  setSelectedDay(null);
+                  onSelectLesson(lesson);
+                }}
+                className="flex flex-col gap-1.5 rounded-xl border border-border p-3 text-left hover:bg-primary-light/30"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-sm font-bold text-foreground">{lesson.title}</p>
+                  <StatusBadge status={status} />
+                </div>
+                <p className="text-xs text-muted">
+                  {formatLessonTime(lesson.startTime, lesson.endTime)} · {lesson.teacher} 선생님 ·{" "}
+                  {lesson.location}
+                </p>
+              </button>
+            );
+          })}
+        </div>
+      </Modal>
     </div>
   );
 }

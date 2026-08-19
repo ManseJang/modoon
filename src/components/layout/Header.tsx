@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -20,11 +21,22 @@ export default function Header() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link
           href="/"
-          className="flex items-baseline gap-1.5 rounded-lg py-1 focus-visible:outline-2 focus-visible:outline-primary"
-          onClick={() => setIsOpen(false)}
+          className="flex items-center gap-2 rounded-lg py-1 focus-visible:outline-2 focus-visible:outline-primary"
+          onClick={(e) => {
+            setIsOpen(false);
+            if (pathname === "/") {
+              // 메인 화면에 남아있는 검색어/필터/달력 이동 상태를 완전히 초기화하기 위해 의도적으로 하드 리로드합니다.
+              e.preventDefault();
+              // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+              window.location.href = "/";
+            }
+          }}
         >
-          <span className="text-base font-medium text-muted">약수초</span>
-          <span className="text-xl font-black tracking-tight text-primary">모두ON</span>
+          <Image src="/logo.png" alt="약수초등학교 마크" width={32} height={32} className="rounded-full" priority />
+          <span className="flex items-baseline gap-1.5">
+            <span className="text-base font-medium text-muted">약수초</span>
+            <span className="text-xl font-black tracking-tight text-primary">모두ON</span>
+          </span>
         </Link>
 
         <nav className="hidden items-center gap-1 sm:flex">

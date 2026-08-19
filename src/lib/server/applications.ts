@@ -101,6 +101,38 @@ export async function listApplicantsForLesson(lessonId: string): Promise<Applica
     .sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
 }
 
+export interface ApplicantWithLessonInfo extends Application {
+  lessonTitle: string;
+  lessonDate: string;
+  lessonTeacher: string;
+}
+
+/** 관리자용: 전체 수업의 신청자 목록을 한 번에 조회합니다 (최신순). */
+export async function listAllApplicantsAdmin(): Promise<ApplicantWithLessonInfo[]> {
+  const db = getAdminDb();
+  const [applicationsSnap, lessonsSnap] = await Promise.all([
+    db.collection("applications").get(),
+    db.collection("lessons").get(),
+  ]);
+
+  const lessonById = new Map(
+    lessonsSnap.docs.map((doc) => [doc.id, doc.data() as { title: string; date: string; teacher: string }])
+  );
+
+  return applicationsSnap.docs
+    .map((doc) => {
+      const app = { ...(doc.data() as Omit<Application, "id">), id: doc.id };
+      const lesson = lessonById.get(app.lessonId);
+      return {
+        ...app,
+        lessonTitle: lesson?.title ?? "(삭제된 수업)",
+        lessonDate: lesson?.date ?? "",
+        lessonTeacher: lesson?.teacher ?? "",
+      };
+    })
+    .sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+}
+
 /**
  * 관리자가 신청을 취소 처리합니다. 기록은 삭제하지 않고 status를 'cancelled'로 남겨
  * 감사(audit) 목적의 이력을 보존하며, 정원(applicantCount)은 트랜잭션으로 안전하게 되돌립니다.

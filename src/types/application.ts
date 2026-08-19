@@ -23,6 +23,13 @@ export interface AdminApplication extends Omit<Application, "createdAt"> {
   createdAt: string;
 }
 
+/** 관리자 전체 신청자 목록용: 수업 정보가 함께 포함됩니다. */
+export interface AdminApplicantWithLesson extends AdminApplication {
+  lessonTitle: string;
+  lessonDate: string;
+  lessonTeacher: string;
+}
+
 export interface ApplicationFormInput {
   name: string;
   organization: string;

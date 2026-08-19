@@ -11,8 +11,6 @@ export function validateLessonInput(body: unknown): { data: LessonFormInput } | 
   const requiredStrings: (keyof LessonFormInput)[] = [
     "title",
     "teacher",
-    "objective",
-    "concern",
     "date",
     "startTime",
     "endTime",
@@ -25,6 +23,11 @@ export function validateLessonInput(body: unknown): { data: LessonFormInput } | 
     if (typeof b[key] !== "string" || !(b[key] as string).trim()) {
       return { error: "모든 필수 항목을 입력해 주세요." };
     }
+  }
+
+  // 수업 목표/고민은 선택 입력 항목입니다.
+  if (typeof b.objective !== "string" || typeof b.concern !== "string") {
+    return { error: "잘못된 요청입니다." };
   }
 
   if (typeof b.capacity !== "number" || !Number.isInteger(b.capacity) || b.capacity < 1) {

@@ -95,7 +95,7 @@ export default function AdminLoginPage() {
                 autoComplete="username"
                 value={id}
                 onChange={(e) => setId(e.target.value)}
-                placeholder="admin"
+                placeholder="아이디를 입력하세요"
                 className="w-full rounded-xl border border-border bg-background py-3 pl-10 pr-3 text-sm outline-none focus:border-primary"
               />
             </div>

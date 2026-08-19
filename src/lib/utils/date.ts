@@ -40,3 +40,10 @@ export function formatDateTime(date: Date): string {
     kst.getUTCHours()
   )}:${pad(kst.getUTCMinutes())}`;
 }
+
+/** 오늘 날짜를 "YYYY-MM-DD" (KST 기준)로 반환합니다. */
+export function getTodayDateString(): string {
+  const kst = toKstShifted(new Date());
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${kst.getUTCFullYear()}-${pad(kst.getUTCMonth() + 1)}-${pad(kst.getUTCDate())}`;
+}

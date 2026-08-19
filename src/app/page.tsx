@@ -16,8 +16,11 @@ import EmptyState from "@/components/ui/EmptyState";
 import Skeleton from "@/components/ui/Skeleton";
 import type { Lesson } from "@/types/lesson";
 import type { ApplicationFormInput } from "@/types/application";
+import StatusBadge from "@/components/ui/StatusBadge";
 import { subscribeToPublishedLessons } from "@/lib/firebase/lessons";
 import { canApply, getLessonStatus } from "@/lib/utils/status";
+import { formatLessonTime, getTodayDateString } from "@/lib/utils/date";
+import { Sparkles } from "lucide-react";
 
 type ViewMode = "calendar" | "card";
 
@@ -64,6 +67,11 @@ export default function Home() {
 
   const selectedLesson = lessons.find((l) => l.id === selectedLessonId) ?? null;
 
+  const todayLessons = useMemo(() => {
+    const today = getTodayDateString();
+    return publishedLessons.filter((l) => l.date === today);
+  }, [publishedLessons]);
+
   function openDetail(lesson: Lesson) {
     setSelectedLessonId(lesson.id);
     setIsDetailOpen(true);
@@ -98,6 +106,34 @@ export default function Home() {
           약수초등학교의 공개수업을 확인하고 참관하고 싶은 수업을 신청해보세요.
         </p>
       </section>
+
+      {!isLoading && todayLessons.length > 0 && (
+        <section className="flex flex-col gap-3 rounded-2xl border border-primary/30 bg-primary-light/40 p-5">
+          <div className="flex items-center gap-2 text-primary-dark">
+            <Sparkles size={18} />
+            <h2 className="text-base font-bold">오늘의 수업</h2>
+          </div>
+          <div className="flex flex-col gap-2">
+            {todayLessons.map((lesson) => (
+              <button
+                key={lesson.id}
+                type="button"
+                onClick={() => openDetail(lesson)}
+                className="flex items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3 text-left shadow-soft hover:-translate-y-0.5 hover:shadow-soft-lg"
+              >
+                <div className="flex flex-col gap-0.5">
+                  <p className="text-sm font-bold text-foreground">{lesson.title}</p>
+                  <p className="text-xs text-muted">
+                    {formatLessonTime(lesson.startTime, lesson.endTime)} · {lesson.teacher} 선생님 ·{" "}
+                    {lesson.location}
+                  </p>
+                </div>
+                <StatusBadge status={getLessonStatus(lesson)} />
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
 
       <LessonStats lessons={publishedLessons} />
 

@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
-import { LayoutDashboard, ListChecks, LogOut } from "lucide-react";
+import { LayoutDashboard, ListChecks, LogOut, Users } from "lucide-react";
 import { auth } from "@/lib/firebase/client";
 
 const NAV_LINKS = [
   { href: "/admin", label: "대시보드", icon: LayoutDashboard, exact: true },
   { href: "/admin/lessons", label: "수업 관리", icon: ListChecks, exact: false },
+  { href: "/admin/applicants", label: "전체 신청자", icon: Users, exact: false },
 ];
 
 export default function AdminSidebar() {

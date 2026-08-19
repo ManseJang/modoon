@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { CheckCircle2 } from "lucide-react";
+import { CalendarPlus, CheckCircle2 } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import Spinner from "@/components/ui/Spinner";
 import type { Lesson } from "@/types/lesson";
@@ -10,6 +10,7 @@ import type { ApplicationFormInput } from "@/types/application";
 import { formatLessonDate, formatLessonTime } from "@/lib/utils/date";
 import { formatPhoneInput, isValidPhone } from "@/lib/utils/validation";
 import { PHOTO_CONSENT_DETAIL, PRIVACY_CONSENT_DETAIL } from "@/lib/consent-text";
+import { downloadLessonIcs } from "@/lib/utils/ics";
 
 type Step = "form" | "review" | "success";
 
@@ -222,6 +223,15 @@ export default function ApplicationForm({
               <ReviewRow label="장소" value={lesson.location} />
               <ReviewRow label="담당 교사" value={`${lesson.teacher} 선생님`} />
             </dl>
+
+            <button
+              type="button"
+              onClick={() => downloadLessonIcs(lesson)}
+              className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-border py-3 text-sm font-semibold text-foreground/80 hover:bg-foreground/5"
+            >
+              <CalendarPlus size={16} />
+              캘린더에 일정 추가
+            </button>
 
             <div className="flex w-full gap-2">
               <button

@@ -1,11 +1,7 @@
 import { BookOpen, CalendarCheck, CheckCircle2, Lock, Users } from "lucide-react";
 import type { AdminLesson } from "@/types/lesson";
 import { getAdminLessonStatus } from "@/lib/utils/status";
-
-function todayStr(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
+import { getTodayDateString } from "@/lib/utils/date";
 
 export default function AdminStats({ lessons }: { lessons: AdminLesson[] }) {
   const total = lessons.length;
@@ -18,7 +14,7 @@ export default function AdminStats({ lessons }: { lessons: AdminLesson[] }) {
     return s === "closed" || s === "ended";
   }).length;
   const totalApplicants = lessons.reduce((sum, l) => sum + l.applicantCount, 0);
-  const today = todayStr();
+  const today = getTodayDateString();
   const todayCount = lessons.filter((l) => l.date === today).length;
 
   const items = [
