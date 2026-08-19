@@ -31,6 +31,19 @@ export default function LessonDetail({
           <StatusBadge status={status} />
         </div>
 
+        {lesson.types && lesson.types.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {lesson.types.map((type) => (
+              <span
+                key={type}
+                className="inline-flex items-center rounded-full bg-accent-light px-2.5 py-0.5 text-xs font-semibold text-accent"
+              >
+                {type}
+              </span>
+            ))}
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-xl bg-primary-light/40 p-4 text-sm">
           <InfoField label="담당 교사" value={`${lesson.teacher} 선생님`} />
           <InfoField label="수업 장소" value={lesson.location} />

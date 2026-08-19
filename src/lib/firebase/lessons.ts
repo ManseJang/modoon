@@ -21,7 +21,7 @@ const lessonConverter: FirestoreDataConverter<Lesson> = {
   toFirestore: (lesson) => lesson,
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
-    return { ...data, id: snapshot.id } as Lesson;
+    return { ...data, types: data.types ?? [], id: snapshot.id } as Lesson;
   },
 };
 

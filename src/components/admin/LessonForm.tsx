@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent, type ReactNode } from "react";
 import Spinner from "@/components/ui/Spinner";
+import LessonTypeSelector from "@/components/admin/LessonTypeSelector";
 import type { AdminLesson, LessonFormInput } from "@/types/lesson";
 import { toDateTimeLocalValue } from "@/lib/utils/date";
 
@@ -30,6 +31,7 @@ function buildInitialState(lesson?: AdminLesson): LessonFormInput {
       startTime: "",
       endTime: "",
       location: "",
+      types: [],
       applicationStartAt: toDateTimeLocalValue(new Date()),
       applicationEndAt: "",
       capacity: 15,
@@ -45,6 +47,7 @@ function buildInitialState(lesson?: AdminLesson): LessonFormInput {
     startTime: lesson.startTime,
     endTime: lesson.endTime,
     location: lesson.location,
+    types: lesson.types ?? [],
     applicationStartAt: toDateTimeLocalValue(new Date(lesson.applicationStartAt)),
     applicationEndAt: toDateTimeLocalValue(new Date(lesson.applicationEndAt)),
     capacity: lesson.capacity,
@@ -191,6 +194,8 @@ export default function LessonForm({
           ))}
         </div>
       </div>
+
+      <LessonTypeSelector selected={form.types} onChange={(types) => update("types", types)} />
 
       <details className="rounded-xl border border-border">
         <summary className="cursor-pointer select-none px-4 py-3 text-sm font-semibold text-foreground/80">

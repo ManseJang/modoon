@@ -16,6 +16,7 @@ export interface Lesson {
   startTime: string; // "HH:mm"
   endTime: string; // "HH:mm"
   location: string;
+  types: string[]; // 학생참여중심 수업 유형 (예: 질문이 있는 수업, 토의토론 수업, 디지털 수업)
   applicationStartAt: Timestamp;
   applicationEndAt: Timestamp;
   capacity: number;
@@ -51,6 +52,7 @@ export interface LessonFormInput {
   startTime: string;
   endTime: string;
   location: string;
+  types: string[];
   applicationStartAt: string; // "YYYY-MM-DDTHH:mm" (datetime-local)
   applicationEndAt: string; // "YYYY-MM-DDTHH:mm"
   capacity: number;

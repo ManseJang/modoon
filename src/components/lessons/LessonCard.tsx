@@ -29,6 +29,19 @@ export default function LessonCard({
 
       <p className="text-sm font-medium text-primary-dark">{lesson.teacher} 선생님</p>
 
+      {lesson.types && lesson.types.length > 0 && (
+        <div className="flex flex-wrap gap-1">
+          {lesson.types.map((type) => (
+            <span
+              key={type}
+              className="inline-flex items-center rounded-full bg-accent-light px-2.5 py-0.5 text-[11px] font-semibold text-accent"
+            >
+              {type}
+            </span>
+          ))}
+        </div>
+      )}
+
       <div className="flex flex-col gap-1.5 text-sm text-muted">
         <span className="flex items-center gap-1.5">
           <CalendarDays size={15} className="shrink-0" />

@@ -30,6 +30,8 @@ export function validateLessonInput(body: unknown): { data: LessonFormInput } | 
     return { error: "잘못된 요청입니다." };
   }
 
+  const types = Array.isArray(b.types) ? b.types.filter((t): t is string => typeof t === "string") : [];
+
   if (typeof b.capacity !== "number" || !Number.isInteger(b.capacity) || b.capacity < 1) {
     return { error: "최대 신청 인원은 1명 이상의 정수여야 합니다." };
   }
@@ -57,6 +59,7 @@ export function validateLessonInput(body: unknown): { data: LessonFormInput } | 
       startTime: b.startTime as string,
       endTime: b.endTime as string,
       location: (b.location as string).trim(),
+      types,
       applicationStartAt: b.applicationStartAt as string,
       applicationEndAt: b.applicationEndAt as string,
       capacity: b.capacity as number,
