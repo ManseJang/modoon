@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build --webpack",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint"
   },
@@ -19,6 +19,9 @@
     "react-dom": "19.2.8",
     "react-hot-toast": "^2.6.0",
     "server-only": "^0.0.1"
+  },
+  "overrides": {
+    "jwks-rsa": "3.2.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
