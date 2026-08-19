@@ -1,0 +1,22 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 공개수업: 공개된(isPublished) 수업만 누구나 조회 가능합니다.
+    // 등록/수정/삭제, 신청 인원 변경은 모두 서버(Next.js API + Firebase Admin SDK)에서만
+    // 처리하며 Admin SDK는 이 규칙을 우회하므로 관리자 화면은 정상 동작합니다.
+    match /lessons/{lessonId} {
+      allow get: if resource.data.isPublished == true;
+      allow list: if resource.data.isPublished == true;
+      allow write: if false;
+    }
+
+    // 신청자 개인정보(이름/연락처 등): 브라우저에서 직접 읽거나 쓸 수 없습니다.
+    // 신청 접수(/api/apply), 신청 확인(/api/check), 관리자 기능은 모두
+    // 서버 API를 통해 Admin SDK로만 접근합니다.
+    match /applications/{applicationId} {
+      allow read, write: if false;
+    }
+  }
+}
